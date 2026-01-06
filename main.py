@@ -1,3 +1,4 @@
+# & C:/Users/Owner/Desktop/music-downloader/venv/Scripts/python.exe c:/Users/Owner/Desktop/music-downloader/main.py     
 import math
 import re
 import subprocess
@@ -6,9 +7,8 @@ from spotdl import console_entry_point
 import yt_dlp
 import urllib.request
 from spotdl.utils import spotify
-from stdUtil import COOKIE_FILE, CONFIG_FILE, OUTPUT_PLAYLIST, OUTPUT_ALBUM, deleteBadCharacters, prLightPurple, CLIENT_ID, CLIENT_SECRET, getImage, getzeros, prCyan, prGreen, prPurple, PLAYLIST_FILE_NAME, prRed, prYellow, printBar, removePunctuation ,validateFiles
+from stdUtil import COOKIE_FILE, CONFIG_FILE, CONFIG_FILE_ALBUM, CONFIG_FILE_PLAYLIST, deleteBadCharacters, prLightPurple, CLIENT_ID, CLIENT_SECRET, getImage, getzeros, prCyan, prGreen, prPurple, PLAYLIST_FILE_NAME, prRed, prYellow, printBar, removePunctuation ,validateFiles
 import os
-import json
 from os import walk
 from spotipy.oauth2 import SpotifyClientCredentials
 from sclib import SoundcloudAPI, Track, Playlist
@@ -18,7 +18,9 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from spotdl.types import artist
 from spotdl.utils.spotify import SpotifyClient
-#C:\Users\Owner\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\LocalCache\local-packages\Python310\site-packages\pytube\__main__.py WTF???? WHY IS LEN AND VIEWS NEVER RETURNING ANYTHING OTHER THAN 0???????
+import shutil
+#(venv) PS C:\Users\Owner\Desktop\music-downloader> & C:\Users\Owner\Desktop\music-downloader\venv\Scripts\Activate.ps1
+#(venv) PS C:\Users\Owner\Desktop\music-downloader> & C:/Users/Owner/Desktop/music-downloader/venv/Scripts/python.exe c:/Users/Owner/Desktop/music-downloader/main.py
 class MyLogger:
     def debug(self, msg):
         # For compatibility with youtube-dl, both debug and info are passed into debug
@@ -49,19 +51,17 @@ def main():
         if "spotify" in currentPlaylist.lower():
             search = re.search(r'(?<=https:\/\/open\.spotify\.com\/)[^\/]+',currentPlaylist)
             type2 = "saved" if search is None else search.group(0)
+            
+            # Copy the appropriate config file
+            if type2 == "album":
+                shutil.copy(CONFIG_FILE_ALBUM, CONFIG_FILE)
+            else:
+                shutil.copy(CONFIG_FILE_PLAYLIST, CONFIG_FILE)
+            
             link = re.sub(" .*", "", currentPlaylist).strip()
             name = getImage(link,type2)
-            
-            with open(CONFIG_FILE, 'r') as f:
-                data = json.load(f)
-                data['output'] = OUTPUT_ALBUM if type2 == "album" else OUTPUT_PLAYLIST
-
-            os.remove(CONFIG_FILE)
-            with open(CONFIG_FILE, 'w') as f:
-                json.dump(data, f, indent=4)
-                
             prPurple(f"STARTING {type2}: {name}")
-            subprocess.run([ 'spotdl', 'download', link, '--config', "--cookie-file", COOKIE_FILE])
+            subprocess.run([ 'spotdl', 'download', link, '--config'])
             prCyan(f"{type2} COMPLETE: {name}")
         elif "soundcloud" in currentPlaylist.lower():
             api = SoundcloudAPI()
@@ -151,5 +151,4 @@ def main():
                 ydl.download(URLS)
         pass
 if __name__ == '__main__':
-    while True:
-        main()
+    main()

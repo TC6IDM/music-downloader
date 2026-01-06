@@ -31,6 +31,8 @@ CONFIG_FILE = os.getenv("CONFIG_FILE", "")
 COOKIE_FILE = os.getenv("COOKIE_FILE", "")
 OUTPUT_PLAYLIST = os.getenv("OUTPUT_PLAYLIST", "")
 OUTPUT_ALBUM = os.getenv("OUTPUT_ALBUM", "")
+CONFIG_FILE_ALBUM = os.getenv("CONFIG_FILE_ALBUM", "")
+CONFIG_FILE_PLAYLIST = os.getenv("CONFIG_FILE_PLAYLIST", "")
 
 def removePunctuation(text) -> str:
     cleanerTrackName = re.sub(r'[^\w\s]', '', text)
